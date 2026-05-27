@@ -15,7 +15,7 @@ load_dotenv()
 
 DB_FILE = "chat_history.db"
 # 从环境变量读取 API_KEY，如果没找到则为空
-API_KEY = os.getenv("d8b534a4947d4af786788f11228be32a.JEeEu5J4AYvyoHyc")
+API_KEY = os.getenv("OPENAI_API_KEY", "")
 BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
 PORT = 8000
 # ===========================================
