@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Chat Stream Client</title>
+  <style>body{font-family:Arial;margin:20px}#out{white-space:pre-wrap;border:1px solid #ddd;padding:10px;height:60vh;overflow:auto}</style>
+</head>
+<body>
+  <h3>浏览器端流式消费示例（fetch + ReadableStream）</h3>
+  <div id="out">启动中...</div>
+  <script>
+    async function start() {
+      const out = document.getElementById('out');
+      out.textContent = '';
+      const payload = { text: '浏览器端测试流式响应', session_id: 'browser-session-1', image: null };
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) { out.textContent = '错误: ' + await res.text(); return; }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = '';
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          const parts = buf.split('\n\n');
+          buf = parts.pop();
+          for (const p of parts) {
+            if (p.startsWith('data:')) {
+              const data = p.replace(/^data:\s*/, '');
+              out.textContent += data;
+              out.scrollTop = out.scrollHeight;
+            } else if (p.startsWith('event:') && p.includes('done')) {
+              out.textContent += '\n[DONE]\n';
+            }
+          }
+        }
+      } catch (e) {
+        out.textContent += '\n读取流出错: ' + e;
+      }
+    }
+    start();
+  </script>
+</body>
+</html>

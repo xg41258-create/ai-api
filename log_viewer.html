@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>日志查看器</title>
+  <style>body{font-family:Arial;margin:12px}#wrap{display:flex;gap:12px}pre{width:48%;height:70vh;overflow:auto;border:1px solid #ddd;padding:8px;background:#f9f9f9}</style>
+</head>
+<body>
+  <h3>按级别日志轮询查看</h3>
+  <div>
+    <button id="refresh">刷新</button>
+    自动刷新：<input id="auto" type="checkbox" checked /> 每 <input id="interval" value="3000" style="width:80px"/> ms
+  </div>
+  <div id="wrap">
+    <div>
+      <h4>INFO / WARNING</h4>
+      <pre id="info">加载中...</pre>
+    </div>
+    <div>
+      <h4>ERROR</h4>
+      <pre id="error">加载中...</pre>
+    </div>
+  </div>
+  <script>
+    const infoEl = document.getElementById('info');
+    const errEl = document.getElementById('error');
+    const refreshBtn = document.getElementById('refresh');
+    const autoChk = document.getElementById('auto');
+    const intervalInput = document.getElementById('interval');
+
+    async function fetchLogs() {
+      try {
+        const [i, e] = await Promise.all([
+          fetch(`http://127.0.0.1:8001/logs/info?lines=500`).then(r=>r.text()),
+          fetch(`http://127.0.0.1:8001/logs/error?lines=500`).then(r=>r.text())
+        ]);
+        infoEl.textContent = i || '(no info)';
+        errEl.textContent = e || '(no error)';
+      } catch (err) {
+        infoEl.textContent = '读取失败: ' + err;
+        errEl.textContent = '读取失败: ' + err;
+      }
+    }
+
+    refreshBtn.addEventListener('click', fetchLogs);
+    let timer = null;
+    function schedule() {
+      if (timer) clearInterval(timer);
+      if (autoChk.checked) {
+        const ms = Number(intervalInput.value) || 3000;
+        timer = setInterval(fetchLogs, ms);
+      }
+    }
+
+    autoChk.addEventListener('change', schedule);
+    intervalInput.addEventListener('change', schedule);
+
+    fetchLogs();
+    schedule();
+  </script>
+</body>
+</html>

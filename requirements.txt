@@ -3,3 +3,6 @@ uvicorn
 python-dotenv
 pydantic
 openai
+sqlalchemy
+psycopg2-binary
+prometheus-client

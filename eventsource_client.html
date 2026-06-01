@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>EventSource Chat Client</title>
+  <style>body{font-family:Arial;margin:20px}#out{white-space:pre-wrap;border:1px solid #ddd;padding:10px;height:60vh;overflow:auto}label{display:block;margin-top:8px}</style>
+</head>
+<body>
+  <h3>EventSource Chat 流式示例</h3>
+  <label>Session ID: <input id="session" value="browser-session-ev"/></label>
+  <label>Text: <input id="text" value="你好，EventSource 测试" style="width:80%"/></label>
+  <button id="start">开始（EventSource）</button>
+  <button id="stop">停止</button>
+  <div id="out">尚未连接</div>
+
+  <script>
+    const out = document.getElementById('out');
+    const startBtn = document.getElementById('start');
+    const stopBtn = document.getElementById('stop');
+
+    let es = null;
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 12;
+    const baseDelay = 1000; // ms
+    const maxDelay = 30000; // ms
+    let finished = false;
+    let lastEventId = '';
+
+    function buildUrl(session, text, lastId) {
+      let url = `http://127.0.0.1:8001/chat_stream?text=${text}&session_id=${session}`;
+      if (lastId) url += `&last_event_id=${encodeURIComponent(lastId)}`;
+      return url;
+    }
+
+    function appendLine(s){ out.textContent += s; out.scrollTop = out.scrollHeight; }
+
+    function connect() {
+      if (finished) return;
+      if (es) try{ es.close(); }catch(_){}
+
+      const session = encodeURIComponent(document.getElementById('session').value || 'ev-sess');
+      const text = encodeURIComponent(document.getElementById('text').value || '测试');
+      const url = buildUrl(session, text, lastEventId);
+
+      appendLine(`\n[尝试连接] ${new Date().toLocaleTimeString()} -> ${url}\n`);
+      es = new EventSource(url);
+
+      es.onopen = () => {
+        reconnectAttempts = 0;
+        appendLine('[已连接]\n');
+      };
+
+      es.onmessage = (e) => {
+        // 浏览器会自动填充 lastEventId 如果服务器发送了 `id:` 字段
+        if (e.lastEventId) lastEventId = e.lastEventId;
+        appendLine(e.data);
+      };
+
+      es.addEventListener('done', (e) => {
+        appendLine('\n[DONE]\n');
+        finished = true;
+        try{ es.close(); }catch(_){}
+      });
+
+      es.onerror = (ev) => {
+        appendLine(`\n[连接中断，准备重连] attempt=${reconnectAttempts}\n`);
+        try{ es.close(); }catch(_){}
+        es = null;
+        if (finished) return;
+        reconnectAttempts++;
+        if (reconnectAttempts > maxReconnectAttempts) {
+          appendLine('[达到最大重连次数，停止重连]\n');
+          return;
+        }
+        const delay = Math.min(baseDelay * Math.pow(2, reconnectAttempts-1), maxDelay);
+        appendLine(`[下次重连将在 ${Math.round(delay/1000)}s 后]\n`);
+        setTimeout(() => connect(), delay);
+      };
+    }
+
+    startBtn.addEventListener('click', () => {
+      finished = false;
+      reconnectAttempts = 0;
+      lastEventId = '';
+      out.textContent = '';
+      connect();
+    });
+
+    stopBtn.addEventListener('click', () => {
+      finished = true;
+      if (es) try{ es.close(); }catch(_){}
+      appendLine('\n[已手动停止]\n');
+    });
+  </script>
+</body>
+</html>
