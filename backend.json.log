@@ -36,3 +36,6 @@
 {"timestamp": "2026-06-01T02:26:38.710039Z", "level": "INFO", "message": "结构化日志写入: D:\\api-test\\my-ai-app\\backend\\backend.json.log", "module": "main", "funcName": "<module>", "line": 91, "request_id": null, "trace_id": null, "session_id": null}
 {"timestamp": "2026-06-01T02:26:39.004892Z", "level": "INFO", "message": "\n⏳ 正在连接 Neon 云数据库...", "module": "main", "funcName": "<module>", "line": 182, "request_id": null, "trace_id": null, "session_id": null}
 {"timestamp": "2026-06-01T02:26:43.231577Z", "level": "INFO", "message": "✅ [Database] 数据库连接成功，表结构同步完成！\n", "module": "main", "funcName": "<module>", "line": 187, "request_id": null, "trace_id": null, "session_id": null}
+{"timestamp": "2026-06-01T02:26:51.058503Z", "level": "INFO", "message": "结构化日志写入: D:\\api-test\\my-ai-app\\backend\\backend.json.log", "module": "main", "funcName": "<module>", "line": 91, "request_id": null, "trace_id": null, "session_id": null}
+{"timestamp": "2026-06-01T02:26:51.314280Z", "level": "INFO", "message": "\n⏳ 正在连接 Neon 云数据库...", "module": "main", "funcName": "<module>", "line": 182, "request_id": null, "trace_id": null, "session_id": null}
+{"timestamp": "2026-06-01T02:26:55.452510Z", "level": "INFO", "message": "✅ [Database] 数据库连接成功，表结构同步完成！\n", "module": "main", "funcName": "<module>", "line": 187, "request_id": null, "trace_id": null, "session_id": null}

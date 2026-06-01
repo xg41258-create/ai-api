@@ -103,3 +103,9 @@
 ⏳ 正在连接 Neon 云数据库...
 2026-06-01 10:26:43,228 INFO ✅ [Database] 数据库连接成功，表结构同步完成！
 
+2026-06-01 10:26:51,050 INFO 日志写入: D:\api-test\my-ai-app\backend\backend.log, D:\api-test\my-ai-app\backend\info.log, D:\api-test\my-ai-app\backend\error.log
+2026-06-01 10:26:51,056 INFO 结构化日志写入: D:\api-test\my-ai-app\backend\backend.json.log
+2026-06-01 10:26:51,313 INFO 
+⏳ 正在连接 Neon 云数据库...
+2026-06-01 10:26:55,452 INFO ✅ [Database] 数据库连接成功，表结构同步完成！
+
